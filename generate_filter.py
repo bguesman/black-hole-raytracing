@@ -66,7 +66,7 @@ def construct_mapping(width, height, camera_r, backdrop_r, mass):
 # @return: tuple.
 def trace_ray(i, j, width, height, camera_r, backdrop_r, mass):
     # Currently flips image upside down.
-    return (height - i, j)
+    return ((height - 1) - i, j)
 
 
 # Run main.

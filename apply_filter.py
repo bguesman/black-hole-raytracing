@@ -15,20 +15,12 @@ def main():
     to_write_to = sys.argv[3]
     with open(filter_file, "rb") as f:
         filter = pickle.load(f)
-
         image_old = cv2.imread(image_file)
-
         image_new = np.ones(image_old.shape, dtype="uint8") * 255
-        print("old shape is" + str(image_old.shape))
-
         for i in range(image_old.shape[0]):
             for j in range(image_old.shape[1]):
                 index = filter[(i,j)]
-                try:
-                    image_new[i, j] = image_old[index]
-                except:
-                    # print(index)
-
+                image_new[i, j] = image_old[index]
         cv2.imwrite(to_write_to, image_new)
 
 
