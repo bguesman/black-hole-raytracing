@@ -49,15 +49,18 @@ def calc_schwarzschild_radius(mass):
 
 # Constructs the mapping between the pixels of the input image and the
 # pixels of the output image.
-# @return: array of (u, v) points in filtered image to (u, v) points
-# in original image, left to right from top to bottom.
+# @return: 2D array of x and y coordinates of old image to use when
+# constructing new image. For instance, to look up which pixel in the
+# old image to use when filling in pixel (i, j) in the new image, one
+# would look in position (0, i * width + j) to find the x coordinate
+# and position (1, i * width + j).
 def construct_mapping(width, height, camera_r, backdrop_r, mass):
-    filter = np.zeros((2, height * width), dtype=int)
+    filter = np.zeros((2, height * width))
     for i in range(height):
         for j in range(width):
             # Do something
             point = trace_ray(i, j, width, height,
-                                         camera_r, backdrop_r, mass)
+                camera_r, backdrop_r, mass)
             # x-coordinate
             filter[0, i * width + j] = point[0]
             # y-coordinate
