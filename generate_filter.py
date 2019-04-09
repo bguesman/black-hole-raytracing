@@ -49,15 +49,19 @@ def calc_schwarzschild_radius(mass):
 
 # Constructs the mapping between the pixels of the input image and the
 # pixels of the output image.
-# @return: dictionary of (u, v) points in filtered image to (u, v) points
-# in original image.
+# @return: array of (u, v) points in filtered image to (u, v) points
+# in original image, left to right from top to bottom.
 def construct_mapping(width, height, camera_r, backdrop_r, mass):
-    filter = {}
+    filter = np.zeros((2, height * width), dtype=int)
     for i in range(height):
         for j in range(width):
             # Do something
-            filter[(i, j)] = trace_ray(i, j, width, height,
+            point = trace_ray(i, j, width, height,
                                          camera_r, backdrop_r, mass)
+            # x-coordinate
+            filter[0, i * width + j] = point[0]
+            # y-coordinate
+            filter[1, i * width + j] = point[1]
     return filter
 
 # Traces a ray around the black hole to determine where in the original image

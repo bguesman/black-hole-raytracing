@@ -17,12 +17,12 @@ def main():
         filter = pickle.load(f)
         image_old = cv2.imread(image_file)
         image_new = np.ones(image_old.shape, dtype="uint8") * 255
-        for i in range(image_old.shape[0]):
-            for j in range(image_old.shape[1]):
-                index = filter[(i,j)]
-                image_new[i, j] = image_old[index]
+        # for i in range(image_old.shape[0]):
+        #     for j in range(image_old.shape[1]):
+        #         index = filter[(i,j)]
+        #         image_new[i, j] = image_old[index]
+        image_new = image_old[filter.tolist()].reshape(image_old.shape)
         cv2.imwrite(to_write_to, image_new)
-
 
 # Run main.
 main()
