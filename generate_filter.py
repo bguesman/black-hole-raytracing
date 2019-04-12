@@ -72,13 +72,17 @@ def construct_mapping(width, height, camera_r, backdrop_r, mass):
 # image.
 # @return: tuple.
 def trace_ray(i, j, width, height, camera_r, backdrop_r, mass):
-    # Currently flips image upside down.
+    # Construct initial position and velocity.
+    # p = make_photon_at_grid_point(i, j, width, height)
+
+    # step the photon until it coincides with
+    # the background plane (along z axis)
+    # for ... check if intersect, if not step
+
+    # Return the x, y position
+
     return ((height - 1) - i, j)
 
 
 # Run main.
-<<<<<<< HEAD
-main('filters/', 1980, 1020, 100, 100, 10)
-=======
 main()
->>>>>>> a1db786128e10c112f67e475921c46c22b38b2a0
