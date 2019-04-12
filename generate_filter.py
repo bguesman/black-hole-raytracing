@@ -77,4 +77,8 @@ def trace_ray(i, j, width, height, camera_r, backdrop_r, mass):
 
 
 # Run main.
+<<<<<<< HEAD
 main('filters/', 1980, 1020, 100, 100, 10)
+=======
+main()
+>>>>>>> a1db786128e10c112f67e475921c46c22b38b2a0
