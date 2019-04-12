@@ -3,6 +3,7 @@
 # t'' = -2GM/(r(r-2GM)) * r' *t'
 #r'' = -(GM/r^3)*(r-2GM)*(t')^2 + (GM/(r(r-@GM)))
 import numpy as np
+import copy
 
 def sin(theta):
 	return np.sin(theta)
@@ -28,8 +29,25 @@ def cartesian_to_sphere(vec):
 class photon(object):
 	def __init__(pos, pos_):
 		self.pos0 = copy.copy(pos)
-		self.pos
-		
+		self.pos0_ = copy.copy(pos_)
+		self.sph_pos = cartesian_to_sphere(copy.copy(pos))
+		self.sph_pos_ = cartesan_to_sphere(copy.copy(pos_))
+		self.sph_poss = np.array([cartesian_to_sphere(copy.copy(pos))])
+		self.sph_pos_s = np.array([cartesan_to_sphere(copy.copy(pos_))])
+
+		def step_rk4():
+			#make state updated
+
+def make_photon_at_grid_pt(pt, eye_r, film_r, film_height, film_height, film_width):
+	cart_pos = np.array([0, pt[1] - film_width/2, film_height/2 - pt[0], camera_r])
+	vx = cart_pos[1]
+	vy = cart_pos[2]
+	vz = film_r - eye_r
+	v_norm = (vx**2 + vy**2 + vz**2)**.5
+	cart_pos_ = np.array([1, vx/v_norm, vy/v_norm, vz/v_norm])
+	return photon(cart_pos, cart_pos_)
+
+
 
 def pos__(pos, pos_):
 	t, r, thet, phi = tuple(pos)
