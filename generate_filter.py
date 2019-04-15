@@ -8,10 +8,13 @@ import numpy as np
 import cv2
 import sys
 import pickle
+from tqdm import tqdm
+
+from Ray_Diff_Eqs import photon, make_photon_at_grid_pt
 
 # import photon, make_photon_at_grid_pt from "Ray_Diff_Eqs.py"
 
-NUM_ARGS = 7
+NUM_ARGS = 8
 
 # Main entry point for script.
 def main():
@@ -23,7 +26,7 @@ def main():
   filepath = sys.argv[1]
   width = int(sys.argv[2])
   height = int(sys.argv[3])
-  height_angle = float(sys.argv[4])
+  height_angle = np.pi * float(sys.argv[4]) / 180
   camera_r = float(sys.argv[5])
   backdrop_r = float(sys.argv[6])
   mass = float(sys.argv[7])
@@ -61,10 +64,8 @@ def calc_schwarzschild_radius(mass):
 def construct_mapping(width, height, height_angle, camera_r, backdrop_r, mass):
     filter = np.zeros((2, height * width))
     # Construct the filter.
-    for i in range(height):
+    for i in tqdm(range(height)):
         for j in range(width):
-            if (i % 20 == 0 and j == 0):
-                print("{:10.2f}".format(100 * i / height) + "% done")
             # Trace the ray.
             point = trace_ray(i, j, width, height, height_angle,
                 camera_r, backdrop_r, mass)
@@ -98,7 +99,7 @@ def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
     # The film plane will be a distance of 1 away from the eye. We can
     # calculate the height of the film plane using the height angle.
     film_plane_to_eye = 1
-    film_plane_height = tan(height_angle / 2) * film_plane_to_eye
+    film_plane_height = np.tan(height_angle / 2) * film_plane_to_eye
     film_plane_width = (width/height) * film_plane_height
 
     # To calculate the film plane r coordinate, we subtract the distance from
@@ -109,20 +110,20 @@ def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
     # The position is the i, j coordinate, scaled to the size of the film
     # plane. The film plane is centered in the photon construction code.
     pt = np.array([i / film_plane_height, j / film_plane_width])
-    p = make_photon_at_grid_point(pt, -camera_r, -film_plane_r,
-                                    film_height, film_width)
+    p = make_photon_at_grid_pt(pt, camera_r, film_plane_r,
+                                    film_plane_height, film_plane_width)
 
     # step the photon until it coincides with
     # the background plane (along z axis)
     # for ... check if intersect, if not step
     schwarzschild_radius = calc_schwarzschild_radius(mass)
     epsilon = 0.01
-    while (p.pos[2] < backdrop_r && p.sph_pos[1] > schwarzschild_radius + epsilon):
-        p.step_rk4()
+    while (p.pos[3] < backdrop_r and p.sph_pos[1] > schwarzschild_radius + epsilon):
+        p.step()
 
     # Return the x, y position, plus an indicator that tells us if the ray
     # was captured by the black hole.
-    return (p.pos[2] < backdrop_r) ? (-1, -1, True) : (p.pos[1], p.pos[0], False)
+    return (-1, -1, True) if (p.pos[2] < backdrop_r) else (p.pos[1], p.pos[0], False)
     # return (i, j, i > 200 and i < 900 and j > 200 and j < 700)
 
 # Run main.

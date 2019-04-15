@@ -70,7 +70,7 @@ class photon(object):
 				self.pos_s = np.append(self.pos_s, np.array([copy.copy(self.pos_)]), axis=0)
 
 def make_photon_at_grid_pt(pt, eye_r, film_r, film_height, film_width):
-	cart_pos = np.array([0, pt[1] - film_width/2, film_height/2 - pt[0], camera_r])
+	cart_pos = np.array([0, pt[1] - film_width/2, film_height/2 - pt[0], film_r])
 	vx = cart_pos[1]
 	vy = cart_pos[2]
 	vz = -(film_r - eye_r)
@@ -153,20 +153,20 @@ def txyz_pos__(txyz_pos, txyz_pos_):
 #M=.000001
 
 
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.set_xlabel("x")
-ax.set_ylabel("y")
-ax.set_zlabel("z")
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# ax.set_xlabel("x")
+# ax.set_ylabel("y")
+# ax.set_zlabel("z")
 
-num_steps = 1000
-for m in tqdm(range(0,7)):
-	for n in range(0,7):
-		photon_i = make_photon_at_grid_pt([m,n], 4, 2, .2, .2)
-		for i in range(num_steps):
-			photon_i.step()
-		poss_txyz = np.array(photon_i.poss)
-		ax.plot(poss_txyz[:,1], poss_txyz[:,2], poss_txyz[:,3])
+# num_steps = 1000
+# for m in tqdm(range(0,7)):
+# 	for n in range(0,7):
+# 		photon_i = make_photon_at_grid_pt([m,n], 4, 2, .2, .2)
+# 		for i in range(num_steps):
+# 			photon_i.step()
+# 		poss_txyz = np.array(photon_i.poss)
+# 		ax.plot(poss_txyz[:,1], poss_txyz[:,2], poss_txyz[:,3])
 
 # photon1 = photon(np.array([0, 3.8, 3.8, -5]), np.array([1, 0,0,1]))
 # for i in tqdm(range(num_steps)):
@@ -176,12 +176,12 @@ for m in tqdm(range(0,7)):
 # ax.plot(poss_txyz[:,1], poss_txyz[:,2], poss_txyz[:,3])
 
 #draw sphere
-u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-x = (2*G*M)*np.cos(u)*np.sin(v)
-y = (2*G*M)*np.sin(u)*np.sin(v)
-z = (2*G*M)*np.cos(v)
-ax.plot_wireframe(x, y, z, color="k")
-plt.show()
+# u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+# x = (2*G*M)*np.cos(u)*np.sin(v)
+# y = (2*G*M)*np.sin(u)*np.sin(v)
+# z = (2*G*M)*np.cos(v)
+# ax.plot_wireframe(x, y, z, color="k")
+# plt.show()
 
-print(cartesian_to_sphere(sphere_to_cartesian(np.array([1,2,3,4]))))
-print(sphere_to_cartesian(cartesian_to_sphere(np.array([1,2,3,4]))))
+# print(cartesian_to_sphere(sphere_to_cartesian(np.array([1,2,3,4]))))
+# print(sphere_to_cartesian(cartesian_to_sphere(np.array([1,2,3,4]))))
