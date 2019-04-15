@@ -24,22 +24,22 @@ def sin(theta):
 def cos(theta):
 	return np.cos(theta)
 G=1
-M=1
+M=.5
 
 @jit
 def sphere_to_cartesian(vec):
 	t, r, thet, phi = tuple(vec)
-	x= r*sin(thet)*cos(phi)
+	x= r*sin(phi)*cos(thet)
 	y= r*sin(thet)*sin(phi)
-	z= r*cos(thet)
+	z= r*cos(phi)
 	return np.array([t, x, y, z])
 
 @jit
 def cartesian_to_sphere(vec):
 	t, x, y, z = tuple(vec)
 	r= (x**2 + y**2 + z**2)**.5
-	thet= np.arccos(z/r)
-	phi= np.arctan2(y,x)
+	phi= np.arccos(z/r)
+	thet=  np.arctan2(y,x)
 	return np.array([t, r, thet, phi])
 
 def dl_func(sph_pos):
@@ -61,7 +61,8 @@ class photon(object):
 		if not self.finished:
 			#print(self.sph_pos_)
 			self.pos, self.pos_ = euler_step_txyz(self.pos, self.pos_, txyz_pos__, self.dl)
-			if False:#(self.sph_pos[1] > 5): #(self.sph_pos[1] < 2*G*M + 0.0001) or 
+			if (cartesian_to_sphere(self.pos)[1] < 2*G*M + 0.0001):
+				print(cartesian_to_sphere(self.pos)) 
 				self.finished = True
 				print("finished")
 			else:
@@ -79,7 +80,7 @@ def make_photon_at_grid_pt(pt, eye_r, film_r, film_height, film_width):
 	return photon(cart_pos, cart_pos_)
 
 def make_basic_photon_at_grid_pt(pt, eye_r, film_r, film_height, film_width):
-	cart_pos = np.array([0, film_width/2 - pt[1], film_height/2 - pt[0], -eye_r])
+	cart_pos = np.array([0, film_width*(1/2 - pt[1]), film_height*(1/2 - pt[0]), -eye_r])
 	vx = 0
 	vy = 0
 	vz = 1
@@ -93,26 +94,45 @@ def txyz_pos__(txyz_pos, txyz_pos_):
 	t, r, thet, phi = tuple(cartesian_to_sphere(txyz_pos))
 
 	t_, x_, y_, z_ = tuple(txyz_pos_)
+	# print("t is %s, t_ is %s"%(t, t_))
+	# print("x is %s, x_ is %s"%(x, x_))
+	# print("y is %s, y_ is %s"%(y, y_))
+	# print("z is %s, z_ is %s"%(z, z_))
+	r_ = cos(thet)*sin(phi)*x_ + sin(thet)*sin(phi)*y_ + cos(phi)*z_
+	thet_ = (-sin(thet)/(r*sin(phi)))*x_ + (cos(thet)/(r*sin(phi)))*y_
+	phi_ = (cos(thet)*cos(phi)/r)*x_ + (sin(thet)*cos(phi)/r)*y_ + (-sin(phi)/r)*z_
+	# r_ = (x*x_ +y*y_ + z*z_)/r
+	# thet_ =	(x*y_ - y*x_)/(x**2 + y**2)
+	# phi_ =  (-1/((1 - ((z/r)**2))**.5))*((r*z_ -z*r_)/r**2)
 
-	r_ = (x*x_ +y*y_ + z*z_)/r
-	thet_ = (-1/((1 - ((z/r)**2))**.5))*((r*z_ -z*r_)/r**2)
-	phi_ = (x*y_-y*x_)/(x**2 + y**2)
+	# CARROL CONVENTION
+	# t__ = ((-2*G*M)/(r*(r - 2*G*M)))*r_*t_
+	
+	# r__ = -(G*M/(r**3))*(r-2*G*M)*(t_**2) + (G*M/(r*(r-2*G*M)))*(r_**2) + (r-2*G*M)*((thet_**2) + (sin(thet)**2)*(phi_)**2)
 
+	# thet__ = (-2/r)*thet_*r_ + sin(thet)*cos(thet)*(phi_**2)
+
+	# phi__ = (-2/r)*phi_*r_ - 2*(cos(thet)/sin(thet))*thet_*phi_
+
+	# WOLFRAM CONVENTION
 	t__ = ((-2*G*M)/(r*(r - 2*G*M)))*r_*t_
 	
-	r__ = -(G*M/(r**3))*(r-2*G*M)*(t_**2) + (G*M/(r*(r-2*G*M)))*(r_**2) + (r-2*G*M)*((thet_**2) + (sin(thet)**2)*(phi_)**2)
+	r__ = -(G*M/(r**3))*(r-2*G*M)*(t_**2) + (G*M/(r*(r-2*G*M)))*(r_**2) + (r-2*G*M)*((phi_**2) + (sin(phi)**2)*(thet_)**2)
 
-	thet__ = (-2/r)*thet_*r_ + sin(thet)*cos(thet)*(phi_**2)
+	phi__ = (-2/r)*phi_*r_ + sin(phi)*cos(phi)*(thet_**2)
 
-	phi__ = (-2/r)*phi_*r_ - 2*(cos(thet)/sin(thet))*thet_*phi_
-	print("+++++++++++++++++++++++++++++++++")
-	print("t is %s, t_ is %s, t__ is %s"%(t, t_, t__))
-	print("r is %s, r_ is %s, r__ is %s"%(r, r_, r__))
-	print("theta is %s, theta_ is %s, thet__ is %s"%(thet, thet_, thet__))
-	print("phi is %s, phi_ is %s, phi__ is %s"%(phi, phi_, phi__))
-	print("+++++++++++++++++++++++++++++++++")
-	x__ = -2*sin(thet)*sin(phi)*thet_*r_ + 2*cos(thet)*cos(phi)*r_*phi_ - 2*r*sin(thet)**cos(phi)*phi_*thet_ + cos(thet)*sin(phi)*r__ - r*sin(thet)*sin(phi)*thet__ + r*cos(thet)*cos(phi)*phi__ - r*cos(thet)*sin(phi)*(thet_**2 + phi_**2)
+	thet__ = (-2/r)*thet_*r_ - 2*(cos(phi)/sin(phi))*thet_*phi_
 
+	# print("+++++++++++++++++++++++++++++++++")
+	# print("r - 2GM is %s"%(r - 2*G*M))
+	# print("---------------------------------")
+	# print("t is %s, t_ is %s, t__ is %s"%(t, t_, t__))
+	# print("r is %s, r_ is %s, r__ is %s"%(r, r_, r__))
+	# print("theta is %s, theta_ is %s, thet__ is %s"%(thet, thet_, thet__))
+	# print("phi is %s, phi_ is %s, phi__ is %s"%(phi, phi_, phi__))
+	# print("+++++++++++++++++++++++++++++++++")
+	x__ = -2*sin(thet)*sin(phi)*thet_*r_ + 2*cos(thet)*cos(phi)*r_*phi_ - 2*r*sin(thet)*cos(phi)*phi_*thet_ + cos(thet)*sin(phi)*r__ - r*sin(thet)*sin(phi)*thet__ + r*cos(thet)*cos(phi)*phi__ - r*cos(thet)*sin(phi)*(thet_**2 + phi_**2)
+	# print("\n\nX__ IS\n\n %s" % x__)
 	y__ = 2*cos(thet)*sin(phi)*thet_*r_ + 2*sin(thet)*cos(phi)*r_*phi_ + 2*r*cos(thet)*cos(phi)*thet_*phi_ + sin(thet)*sin(phi)*r__  + r*cos(thet)*sin(phi)*thet__ +r*sin(thet)*cos(phi)*phi__ - r*sin(thet)*sin(phi)*(thet_**2 + phi_**2)
 
 	z__ = -r*cos(phi)*(phi_**2) + cos(phi)*r__ - 2*sin(phi)*phi_*r_ - r*sin(phi_)*phi__
@@ -139,26 +159,23 @@ ax.set_xlabel("x")
 ax.set_ylabel("y")
 ax.set_zlabel("z")
 
-num_steps = 1200
-# for m in tqdm(range(5,7)):
-# 	for n in tqdm(range(5,7)):
-# 		photon_i = make_basic_photon_at_grid_pt([m,n], 4, 2, 6, 6)
-# 		for i in range(num_steps):
-# 			photon_i.step()
-# 		poss_txyz = []
-# 		for i in range(np.shape(photon_i.sph_poss)[0]):
-# 			poss_txyz.append(sphere_to_cartesian(photon_i.sph_poss[i,:]))
-# 		poss_txyz = np.array(poss_txyz)
-# 		ax.plot(poss_txyz[:,1], poss_txyz[:,2], poss_txyz[:,3])
+num_steps = 1000
+for m in tqdm(range(0,7)):
+	for n in range(0,7):
+		photon_i = make_photon_at_grid_pt([m,n], 4, 2, .2, .2)
+		for i in range(num_steps):
+			photon_i.step()
+		poss_txyz = np.array(photon_i.poss)
+		ax.plot(poss_txyz[:,1], poss_txyz[:,2], poss_txyz[:,3])
 
-photon1 = photon(np.array([0, 3.8, 3.8, -5]), np.array([1, 0,0,1]))
-for i in tqdm(range(num_steps)):
-	photon1.step()
-poss_txyz = photon1.poss
-print(photon1.pos_s)
-ax.plot(poss_txyz[:,1], poss_txyz[:,2], poss_txyz[:,3])
+# photon1 = photon(np.array([0, 3.8, 3.8, -5]), np.array([1, 0,0,1]))
+# for i in tqdm(range(num_steps)):
+# 	photon1.step()
+# poss_txyz = photon1.poss
+# print(photon1.pos_s)
+# ax.plot(poss_txyz[:,1], poss_txyz[:,2], poss_txyz[:,3])
 
-# draw sphere
+#draw sphere
 u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
 x = (2*G*M)*np.cos(u)*np.sin(v)
 y = (2*G*M)*np.sin(u)*np.sin(v)
