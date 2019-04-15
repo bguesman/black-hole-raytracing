@@ -61,7 +61,7 @@ class photon(object):
 		if not self.finished:
 			#print(self.sph_pos_)
 			self.pos, self.pos_ = euler_step_txyz(self.pos, self.pos_, txyz_pos__, self.dl)
-			if False:#(self.sph_pos[1] > 5): #(self.sph_pos[1] < 2*G*M + 0.0001) or 
+			if False:#(self.sph_pos[1] > 5): #(self.sph_pos[1] < 2*G*M + 0.0001) or
 				self.finished = True
 				print("finished")
 			else:
@@ -69,7 +69,7 @@ class photon(object):
 				self.pos_s = np.append(self.pos_s, np.array([copy.copy(self.pos_)]), axis=0)
 
 def make_photon_at_grid_pt(pt, eye_r, film_r, film_height, film_width):
-	cart_pos = np.array([0, pt[1] - film_width/2, film_height/2 - pt[0], -eye_r])
+	cart_pos = np.array([0, pt[1] - film_width/2, film_height/2 - pt[0], camera_r])
 	vx = cart_pos[1]
 	vy = cart_pos[2]
 	vz = -(film_r - eye_r)
@@ -94,13 +94,12 @@ def txyz_pos__(txyz_pos, txyz_pos_):
 
 	t_, x_, y_, z_ = tuple(txyz_pos_)
 
-	r_ = (x*x_ +y*y_ + z*z_)/r
-	thet_ = (-1/((1 - ((z/r)**2))**.5))*((r*z_ -z*r_)/r**2)
-	phi_ = (x*y_-y*x_)/(x**2 + y**2)
+def pos__(pos, pos_):
+	t, r, thet, phi = tuple(pos)
+	t_, r_, thet_, phi_ = tuple(pos_)
+	t__ = ((-2*G*M)/(r*(r-2*G*M)))*r_*t_
 
-	t__ = ((-2*G*M)/(r*(r - 2*G*M)))*r_*t_
-	
-	r__ = -(G*M/(r**3))*(r-2*G*M)*(t_**2) + (G*M/(r*(r-2*G*M)))*(r_**2) + (r-2*G*M)*((thet_**2) + (sin(thet)**2)*(phi_)**2)
+	r__ = -(G*M/(r**3))*(r-2*G*M)*(t_**2) + (G*M/(r*(r-2*G*M)))*(r_**2) + (r-2*G*M)*((thet_**2) + (sin(thet)*phi_)**2)
 
 	thet__ = (-2/r)*thet_*r_ + sin(thet)*cos(thet)*(phi_**2)
 
@@ -166,3 +165,5 @@ z = (2*G*M)*np.cos(v)
 ax.plot_wireframe(x, y, z, color="k")
 plt.show()
 
+print(cartesian_to_sphere(sphere_to_cartesian(np.array([1,2,3,4]))))
+print(sphere_to_cartesian(cartesian_to_sphere(np.array([1,2,3,4]))))
