@@ -136,17 +136,17 @@ def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
     # the background plane (along z axis)
     # for ... check if intersect, if not step
     schwarzschild_radius = calc_schwarzschild_radius(mass)
-    epsilon = 0.1
+    epsilon = 0.001
     sph_pos = cartesian_to_sphere(p.pos)
     # print("%s, %s", (i, j))
-    while (p.pos[3] < backdrop_r and sph_pos[1] > schwarzschild_radius + epsilon):
+    while (p.pos[3] < backdrop_r and p.pos[3] > -camera_r - epsilon and sph_pos[1] > schwarzschild_radius + epsilon):
         p.step()
         sph_pos = cartesian_to_sphere(p.pos)
 
     # Return the x, y position, plus an indicator that tells us if the ray
     # was captured by the black hole.
     # print(p.pos[0])
-    return (-1, -1, True) if (p.pos[3] < backdrop_r) else (p.pos[2], p.pos[1], False)
+    return (p.pos[2], p.pos[1], False) if (p.pos[3] > backdrop_r) else (-1, -1, True)
     # return (i, j, i > 200 and i < 900 and j > 200 and j < 700)
 
 # Run main.
