@@ -62,7 +62,10 @@ def main():
             for j in range(width):
                 for c in range(3):
                     print(filter[1, i * width + j])
-                    image_new[i, j, c] = f[c](filter[0, i * width + j],
+                    if (filter[1, i * width + j] < 0):
+                        image_new[i, j, c] = 0
+                    else:
+                        image_new[i, j, c] = f[c](filter[0, i * width + j],
                                     filter[1, i * width + j])
         cv2.imwrite(to_write_to, image_new)
 
