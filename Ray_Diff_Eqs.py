@@ -10,8 +10,8 @@ from tqdm import tqdm
 from numba import jit
 
 @jit
-def euler_step_txyz(pos, pos_, accel_function, delta_l):
-    pos__ = accel_function(pos, pos_)
+def euler_step_txyz(pos, pos_, accel_function, delta_l, M):
+    pos__ = accel_function(pos, pos_, M)
     #print(pos__)
     cart_pos = pos + delta_l*pos_
     cart_pos_ = pos_+ delta_l*pos__
@@ -23,7 +23,6 @@ def sin(theta):
 def cos(theta):
 	return np.cos(theta)
 G=1
-M=.05
 
 @jit
 def sphere_to_cartesian(vec):
@@ -56,10 +55,10 @@ class photon(object):
 		self.dl = 0.1
 		self.finished = False
 
-	def step(self):
+	def step(self, M):
 		if not self.finished:
 			#print(self.sph_pos_)
-			self.pos, self.pos_ = euler_step_txyz(self.pos, self.pos_, txyz_pos__, self.dl)
+			self.pos, self.pos_ = euler_step_txyz(self.pos, self.pos_, txyz_pos__, self.dl, M)
 			if (cartesian_to_sphere(self.pos)[1] < 2*G*M + 0.0001):
 				self.poss = np.append(self.poss, np.array([copy.copy(self.pos)]), axis=0)
 				self.pos_s = np.append(self.pos_s, np.array([copy.copy(self.pos_)]), axis=0)
@@ -88,7 +87,7 @@ def make_basic_photon_at_grid_pt(pt, eye_r, film_r, film_height, film_width):
 	return photon(cart_pos, cart_pos_)
 
 @jit
-def txyz_pos__(txyz_pos, txyz_pos_):
+def txyz_pos__(txyz_pos, txyz_pos_, M):
 	t, x, y, z = tuple(txyz_pos)
 	t, r, thet, phi = tuple(cartesian_to_sphere(txyz_pos))
 

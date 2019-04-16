@@ -140,7 +140,7 @@ def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
     sph_pos = cartesian_to_sphere(p.pos)
     # print("%s, %s", (i, j))
     while (p.pos[3] < backdrop_r and p.pos[3] > -camera_r - epsilon and sph_pos[1] > schwarzschild_radius + epsilon):
-        p.step()
+        p.step(mass)
         sph_pos = cartesian_to_sphere(p.pos)
 
     # Return the x, y position, plus an indicator that tells us if the ray
