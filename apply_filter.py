@@ -64,3 +64,6 @@ def main():
 
 # Run main.
 main()
+
+# python3 apply_filter.py filters/width\:100_height\:56_cam_dist\:6.0_backdrop_dist\:1.0_mass\:0.1.pkl test-images/astronaut100.jpg out.p
+# python3 generate_filter.py filters 100 56 45 6 1 .1
