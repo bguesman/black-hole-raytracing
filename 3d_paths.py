@@ -13,7 +13,7 @@ M=.1
 num_steps = 3000
 for m in tqdm(range(0,9)):
 	for n in range(0,9):
-		photon_i = make_basic_photon_at_grid_pt([m,n], 10, 5, 8, 8)
+		photon_i = make_photon_at_grid_pt([m,n], 10, 5, 8, 8)
 		for i in range(num_steps):
 			photon_i.step()
 		poss_txyz = np.array(photon_i.poss)

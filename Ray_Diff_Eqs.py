@@ -69,7 +69,7 @@ class photon(object):
 				self.pos_s = np.append(self.pos_s, np.array([copy.copy(self.pos_)]), axis=0)
 
 def make_photon_at_grid_pt(pt, eye_r, film_r, film_height, film_width):
-	cart_pos = np.array([0, -pt[1] + film_width/2, film_height/2 - pt[0], -eye_r])
+	cart_pos = np.array([0, -pt[1] + film_width/2, film_height/2 - pt[0], -film_r])
 	vx = cart_pos[1]
 	vy = cart_pos[2]
 	vz = -(film_r - eye_r)
@@ -79,7 +79,7 @@ def make_photon_at_grid_pt(pt, eye_r, film_r, film_height, film_width):
 	return photon(cart_pos, cart_pos_)
 
 def make_basic_photon_at_grid_pt(pt, eye_r, film_r, film_height, film_width):
-	cart_pos = np.array([0, film_width*1/2 - pt[1], film_height*1/2 - pt[0], -eye_r])
+	cart_pos = np.array([0, film_width*1/2 - pt[1], film_height*1/2 - pt[0], -film_r])
 	vx = 0
 	vy = 0
 	vz = 1
