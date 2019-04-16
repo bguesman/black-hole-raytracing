@@ -23,7 +23,7 @@ def sin(theta):
 def cos(theta):
 	return np.cos(theta)
 G=1
-M=.1
+M=.05
 
 @jit
 def sphere_to_cartesian(vec):

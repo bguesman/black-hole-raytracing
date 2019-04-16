@@ -15,7 +15,7 @@ from Ray_Diff_Eqs import photon, make_photon_at_grid_pt, cartesian_to_sphere
 # import photon, make_photon_at_grid_pt from "Ray_Diff_Eqs.py"
 
 NUM_ARGS = 8
-
+ # python generate_filter.py filters 125 125 45 5 1 0.1
 # Main entry point for script.
 def main():
   if len(sys.argv) < NUM_ARGS - 1:
@@ -45,8 +45,10 @@ def main():
   print("")
 
   mapping = construct_mapping(width, height, height_angle, camera_r, backdrop_r, mass)
-  savename = "width:%s_height:%s_cam_dist:%s_backdrop_dist:%s_mass:%s" % \
-    (width, height, camera_r, backdrop_r, mass)
+  # savename = "width:%s_height:%s_cam_dist:%s_backdrop_dist:%s_mass:%s" % \
+  #   (width, height, camera_r, backdrop_r, mass)
+  savename = "width%s_height%s" % \
+    (width, height)
   with open(filepath + "/" + savename + ".pkl", 'wb') as f:
       pickle.dump(mapping, f, pickle.HIGHEST_PROTOCOL)
 
@@ -124,7 +126,7 @@ def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
     schwarzschild_radius = calc_schwarzschild_radius(mass)
     epsilon = 0.1
     sph_pos = cartesian_to_sphere(p.pos)
-    print("%s, %s", (i, j))
+    #print("%s, %s", (i, j))
     while (p.pos[3] < backdrop_r and sph_pos[1] > schwarzschild_radius + epsilon):
         p.step()
         sph_pos = cartesian_to_sphere(p.pos)
