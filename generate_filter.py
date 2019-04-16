@@ -10,7 +10,7 @@ import sys
 import pickle
 from tqdm import tqdm
 
-from Ray_Diff_Eqs import photon, make_photon_at_grid_pt
+from Ray_Diff_Eqs import photon, make_photon_at_grid_pt, cartesian_to_sphere
 
 # import photon, make_photon_at_grid_pt from "Ray_Diff_Eqs.py"
 
@@ -75,9 +75,9 @@ def construct_mapping(width, height, height_angle, camera_r, backdrop_r, mass):
                 # y-coordinate
                 filter[1, i * width + j] = -10e100
             else:
-                print("intersected")
-                print("x: %s" % point[0])
-                print("y: %s" % point[1])
+                # print("intersected")
+                # print("x: %s" % point[0])
+                # print("y: %s" % point[1])
                 # x-coordinate
                 filter[0, i * width + j] = point[0]
                 # y-coordinate
@@ -98,12 +98,13 @@ def construct_mapping(width, height, height_angle, camera_r, backdrop_r, mass):
 # @return: truple (x, y, whether or not ray fell in the black hole)
 def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
     # Construct initial position and velocity.
-
     # The film plane will be a distance of 1 away from the eye. We can
     # calculate the height of the film plane using the height angle.
-    film_plane_to_eye = 1
+    film_plane_to_eye = 0.001
     film_plane_height = np.tan(height_angle / 2) * film_plane_to_eye
     film_plane_width = (width/height) * film_plane_height
+    # print("height: %s, width: %s" % (film_plane_height, film_plane_width))
+
 
     # To calculate the film plane r coordinate, we subtract the distance from
     # the eye to the film plane from the eye point. This is opposite in sign
@@ -121,9 +122,12 @@ def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
     # the background plane (along z axis)
     # for ... check if intersect, if not step
     schwarzschild_radius = calc_schwarzschild_radius(mass)
-    epsilon = 0.01
-    while (p.pos[3] < backdrop_r and p.sph_pos[1] > schwarzschild_radius + epsilon):
+    epsilon = 0.1
+    sph_pos = cartesian_to_sphere(p.pos)
+    print("%s, %s", (i, j))
+    while (p.pos[3] < backdrop_r and sph_pos[1] > schwarzschild_radius + epsilon):
         p.step()
+        sph_pos = cartesian_to_sphere(p.pos)
 
     # Return the x, y position, plus an indicator that tells us if the ray
     # was captured by the black hole.

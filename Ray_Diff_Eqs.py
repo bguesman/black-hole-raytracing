@@ -23,7 +23,7 @@ def sin(theta):
 def cos(theta):
 	return np.cos(theta)
 G=1
-M=.5
+M=.1
 
 @jit
 def sphere_to_cartesian(vec):
@@ -53,7 +53,7 @@ class photon(object):
 		self.pos_ = copy.copy(pos_)
 		self.poss = np.array([copy.copy(pos)])
 		self.pos_s = np.array([copy.copy(pos_)])
-		self.dl = 0.01
+		self.dl = 0.1
 		self.finished = False
 
 	def step(self):
@@ -61,9 +61,9 @@ class photon(object):
 			#print(self.sph_pos_)
 			self.pos, self.pos_ = euler_step_txyz(self.pos, self.pos_, txyz_pos__, self.dl)
 			if (cartesian_to_sphere(self.pos)[1] < 2*G*M + 0.0001):
-				print(cartesian_to_sphere(self.pos))
+				self.poss = np.append(self.poss, np.array([copy.copy(self.pos)]), axis=0)
+				self.pos_s = np.append(self.pos_s, np.array([copy.copy(self.pos_)]), axis=0)
 				self.finished = True
-				print("finished")
 			else:
 				self.poss = np.append(self.poss, np.array([copy.copy(self.pos)]), axis=0)
 				self.pos_s = np.append(self.pos_s, np.array([copy.copy(self.pos_)]), axis=0)
