@@ -84,12 +84,25 @@ def construct_mapping(width, height, height_angle, camera_r, backdrop_r, mass):
                 filter[1, i * width + j] = point[1]
     # Scale and translate to the width and height of the image.
     print("{:10.2f}".format(100) + "% done")
-    filter[0] /= np.amax(filter[0])
-    filter[0] += np.amin((filter[0])[filter[0] != np.amin(filter[0])])
-    filter[1] /= np.amax(filter[1])
-    filter[1] += np.amin((filter[1])[filter[1] != np.amin(filter[1])])
-    filter[0] *= height
-    filter[1] *= width
+
+    # 0 is the y position (row). 1 is the x position (col).
+
+    # First, we make it range from [0, upper bound]
+    row_min = np.amin((filter[0])[filter[0] != np.amin(filter[0])])
+    col_min = np.amin((filter[1])[filter[1] != np.amin(filter[1])])
+    filter[0] -= row_min
+    filter[1] -= col_min
+
+    # Next, we scale to [0, 1]
+    row_max = np.amax(filter[0])
+    col_max = np.amax(filter[1])
+    filter[0] /= row_max
+    filter[1] /= col_max
+
+    # Finally, we transform [0, 1] grid to image space.
+    filter[0] = height * (1 - filter[0])
+    filter[1] = width * filter[1]
+
     return filter
 
 # Traces a ray around the black hole to determine where in the original image
@@ -124,7 +137,7 @@ def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
     schwarzschild_radius = calc_schwarzschild_radius(mass)
     epsilon = 0.1
     sph_pos = cartesian_to_sphere(p.pos)
-    print("%s, %s", (i, j))
+    # print("%s, %s", (i, j))
     while (p.pos[3] < backdrop_r and sph_pos[1] > schwarzschild_radius + epsilon):
         p.step()
         sph_pos = cartesian_to_sphere(p.pos)

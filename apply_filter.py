@@ -57,9 +57,11 @@ def main():
         for i in tqdm(range(height)):
             for j in range(width):
                 for c in range(3):
-                    print(filter[1, i * width + j])
-                    image_new[i, j, c] = f[c](-filter[0, i * width + j],
-                                    -filter[1, i * width + j])
+                    print("row %s -> row %s" % (i, filter[0, i * width + j]))
+                    print("col %s -> col %s" % (j, filter[1, i * width + j]))
+                    print("\n")
+                    image_new[i, j, c] = f[c](filter[0, i * width + j],
+                                    filter[1, i * width + j])
         cv2.imwrite(to_write_to, image_new)
 
 # Run main.
@@ -67,3 +69,6 @@ main()
 
 # python3 apply_filter.py filters/width\:100_height\:56_cam_dist\:6.0_backdrop_dist\:1.0_mass\:0.1.pkl test-images/astronaut100.jpg out.p
 # python3 generate_filter.py filters 100 56 45 6 1 .1
+
+# FOR LONG GENERATE:
+# python3 generate_filter.py filters 500 282 45 6 1 .1
