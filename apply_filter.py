@@ -3,6 +3,7 @@ import sys
 import cv2
 import numpy as np
 from scipy import interpolate
+from tqdm import tqdm
 
 from numba import jit
 
@@ -53,7 +54,7 @@ def main():
 
         # Now, we can use the interpolator together with the filter
         # lookup table to apply the filter and create the new image.
-        for i in range(height):
+        for i in tqdm(range(height)):
             for j in range(width):
                 for c in range(3):
                     image_new[i, j, c] = f[c](filter[0, i * width + j],
