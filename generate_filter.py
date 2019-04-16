@@ -75,6 +75,9 @@ def construct_mapping(width, height, height_angle, camera_r, backdrop_r, mass):
                 # y-coordinate
                 filter[1, i * width + j] = -10e100
             else:
+                print("intersected")
+                print("x: %s" % point[0])
+                print("y: %s" % point[1])
                 # x-coordinate
                 filter[0, i * width + j] = point[0]
                 # y-coordinate
@@ -109,7 +112,8 @@ def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
 
     # The position is the i, j coordinate, scaled to the size of the film
     # plane. The film plane is centered in the photon construction code.
-    pt = np.array([i / film_plane_height, j / film_plane_width])
+    pt = np.array([film_plane_height * (i / height),
+                    film_plane_width * (j / width)])
     p = make_photon_at_grid_pt(pt, camera_r, film_plane_r,
                                     film_plane_height, film_plane_width)
 
@@ -123,7 +127,8 @@ def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
 
     # Return the x, y position, plus an indicator that tells us if the ray
     # was captured by the black hole.
-    return (-1, -1, True) if (p.pos[2] < backdrop_r) else (p.pos[1], p.pos[0], False)
+    # print(p.pos[0])
+    return (-1, -1, True) if (p.pos[3] < backdrop_r) else (p.pos[2], p.pos[1], False)
     # return (i, j, i > 200 and i < 900 and j > 200 and j < 700)
 
 # Run main.
