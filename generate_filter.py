@@ -46,7 +46,7 @@ def main():
   print("")
 
   mapping = construct_mapping(width, height, height_angle, camera_r, backdrop_r, mass)
-  savename = "width:%s_height:%s_cam_dist:%s_backdrop_dist:%s_mass:%s" % \
+  savename = "width-%s_height-%s_cam_dist-%s_backdrop_dist-%s_mass-%s" % \
     (width, height, camera_r, backdrop_r, mass)
   with open(filepath + "/" + savename + ".pkl", 'wb') as f:
       pickle.dump(mapping, f, pickle.HIGHEST_PROTOCOL)
