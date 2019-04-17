@@ -139,14 +139,25 @@ def trace_ray(i, j, width, height, height_angle, camera_r, backdrop_r, mass):
     epsilon = 0.001
     sph_pos = cartesian_to_sphere(p.pos)
     # print("%s, %s", (i, j))
-    while (p.pos[3] < backdrop_r and p.pos[3] > -camera_r - epsilon and sph_pos[1] > schwarzschild_radius + epsilon):
+    k=0
+    not_too_long = True
+    while (p.pos[3] < backdrop_r and p.pos[3] > -camera_r - epsilon and sph_pos[1] > schwarzschild_radius + epsilon and not_too_long):
         p.step(mass)
         sph_pos = cartesian_to_sphere(p.pos)
+        k+=1
+        if k >10000:
+          not_too_long = False
+
 
     # Return the x, y position, plus an indicator that tells us if the ray
     # was captured by the black hole.
     # print(p.pos[0])
-    return (p.pos[2], p.pos[1], False) if (p.pos[3] > backdrop_r) else (-1, -1, True)
+    eye_to_background = camera_r + backdrop_r
+    max_up = np.tan(height_angle/2)*eye_to_background
+    max_right = max_up * (width / height)
+    pos_bounded_by_angle = ((p.pos[1] <= max_up) and (p.pos[1] >= -max_up)) and ((p.pos[2]<= max_right) and (p.pos[2] >= -max_right))
+
+    return (p.pos[2], p.pos[1], False) if ((p.pos[3] > backdrop_r) and pos_bounded_by_angle and not_too_long) else (-1, -1, True)
     # return (i, j, i > 200 and i < 900 and j > 200 and j < 700)
 
 # Run main.
