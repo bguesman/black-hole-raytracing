@@ -110,6 +110,9 @@ def main():
         for i in tqdm(range(height)):
             for j in range(width):
                 for c in range(3):
+                    print("row %s -> %s" % (i, filter[0, i * width + j]))
+                    print("col %s -> %s" % (j, filter[1, i * width + j]))
+                    print("")
                     if (filter[1, i * width + j] < 0 or filter[1, i * width + j] >= width
                         or filter[0, i * width + j] < 0 or filter[0, i * width + j] >= height):
                         image_new[i, j, c] = 0
