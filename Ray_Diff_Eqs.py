@@ -52,7 +52,7 @@ class photon(object):
 		self.pos_ = copy.copy(pos_)
 		self.poss = np.array([copy.copy(pos)])
 		self.pos_s = np.array([copy.copy(pos_)])
-		self.dl = 0.1
+		self.dl = 0.02
 		self.finished = False
 
 	def step(self, M):

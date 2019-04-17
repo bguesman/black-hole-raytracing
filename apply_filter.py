@@ -42,6 +42,38 @@ def main():
                                 np.arange(width), old_channels[c])
                                 for c in range(3)]
 
+        # row_mean = np.mean((filter[0])[filter[0] != np.amax(filter[0])])
+        # col_mean = np.mean((filter[1])[filter[1] != np.amin(filter[1])])
+        # print(row_mean)
+        # print(col_mean)
+        # filter_stats = np.transpose(filter)
+        # filter_stats_temp = []
+        # print(filter_stats.shape[0])
+        # for i in range(filter_stats.shape[0]):
+        #     if np.abs(filter[0, i] - row_mean) + np.abs(filter[1, i] - col_mean) < 1:
+        #         filter_stats_temp.append([filter[0,i], filter[1,i]])
+        # print(len(filter_stats_temp))
+        # filter_stats = np.array(filter_stats_temp)
+        # print(filter_stats.shape)
+        # filter_stats = np.transpose(filter_stats)
+        # print(filter_stats.shape)
+        # row_min = np.amin(filter_stats[0])
+        # print(row_min)
+        # col_min = np.amin(filter_stats[1])
+        # print(col_min)
+        # filter_stats[0] -= row_min
+        # filter[0] -= row_min
+        # filter_stats[1] -= col_min
+        # filter[1] -= col_min
+        # row_max = np.amax(filter_stats[0])
+        # col_max = np.amax(filter_stats[1])
+        # print(row_max)
+        # print(col_max)
+        # filter[0] /= row_max
+        # filter[1] /= col_max
+        # filter[0] *= height
+        # filter[1] *= width
+
         # Now, we can use the interpolator together with the filter
         # lookup table to apply the filter and create the new image.
         for i in tqdm(range(height)):
@@ -50,8 +82,8 @@ def main():
                     if (filter[1, i * width + j] < 0):
                         image_new[i, j, c] = 0
                     else:
-                        image_new[i, j, c] = f[c](filter[0, i * width + j],
-                                    filter[1, i * width + j])
+                        image_new[i, j, c] = f[c]((filter[0, i * width + j]),
+                                    (filter[1, i * width + j]))
         cv2.imwrite(to_write_to, image_new)
 
 # Run main.
